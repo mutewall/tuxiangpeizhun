@@ -1,0 +1,50 @@
+from __future__ import division, print_function
+from PIL import Image
+from pylab import *
+import cv2 
+import copy
+
+def highlight(coord, img):
+    im = copy.deepcopy(img)
+    for c in range(7):    
+        x,y = coord[:,c][:2]
+        x=int(x)
+        y=int(y)
+        for i in range(-10,10):
+            for j in range(-10, 10):
+                im[x+i,y+j]=[0,0,255]
+    return im
+
+img1 = Image.open('./Image A.jpg')
+img2 = Image.open('./Image B.jpg')
+img1 = np.array(img1)
+img2 = np.array(img2)
+
+Q=np.array([[1963,3176,1],[2117,1286,1],[1448,1299,1],[1860,1323,1]
+           ,[1632,1301,1],[1168,1492,1],[1911,977,1]], dtype=np.float)
+P=np.array([[1371,1193,1],[1684,886,1],[1043,1071,1],[1442,976,1],
+            [1212,1021,1],[1049,926,1],[1403,645,1]], dtype=np.float)
+
+Q=Q.T
+P=P.T
+
+tmp1=np.matmul(Q,P.T)
+tmp2=np.matmul(P,P.T)
+tmp2=np.matrix(tmp2)
+H=np.matmul(tmp1,tmp2.I)
+print(H)
+
+H = H[:2,:]
+
+res = cv2.warpAffine(img2, H,(3500, 5200))
+
+imshow(res)
+show()
+
+# im1=highlight(Q,img1)
+# imshow(im1)
+# show()
+# im2=highlight(P,img2)
+# imshow(im2)
+# show()
+
